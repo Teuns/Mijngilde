@@ -4,7 +4,7 @@
 #include "Game.h"
 
 std::string path = "assets";
-std::vector<std::string> sprites = { "" };
+std::vector<std::string> sprites = { "", "player" };
 
 Core::Core() {
 	for (std::string& sprite : sprites) {
@@ -18,7 +18,8 @@ Core::Core() {
 		}
 		sf::Sprite Sprite;
 		Sprite.setTexture(texture);
-		if (sprite == "") Sprite.setColor(sf::Color::Black);
+		if (sprite == "") Sprite.setColor({ 32, 191, 107 });
+		else if (sprite == "player") Sprite.setColor({ 253, 150, 68 });
 		vector_sprites.push_back(Sprite);
 	}
 	if (!bgTexture.loadFromFile(path + "/sprites/layer_1.png")) {

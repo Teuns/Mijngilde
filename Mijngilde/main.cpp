@@ -15,7 +15,7 @@ int main(int argc, char* args[])
 
 int Main::init()
 {
-    window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Close);
+    window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Fullscreen | sf::Style::Close);
     window.setFramerateLimit(FPS);
     window.setVerticalSyncEnabled(true);
 

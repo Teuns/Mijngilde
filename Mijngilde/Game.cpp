@@ -30,28 +30,30 @@ void Game::run() {
     // Initialize game
     ground_level = window.getSize().y - CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0]); // Ground level
     Player player("Teun");
-    player.setSprite(getSprite("")); // Set player sprite
+    player.setSprite(getSprite("player")); // Set player sprite
     std::cout << "player name: " << player.getName() << std::endl;
     player.setPosition(player.getPlayer().getTextureRect().left, ground_level - player.getPlayer().getTextureRect().height); // Set player positions
     bgTexture.setRepeated(true);
     bgSprite.setTexture(bgTexture); // Draw background
-    for (int i = 0; i < sizeof(level_grid) / sizeof(level_grid[0]); i++) { // Level
-        for (int j = 0; j < sizeof(level_grid[0]) / sizeof(level_grid[0][0]); j++) {
-            int x_pos = j * CELL_SIZE;
-            int y_pos = window.getSize().y - i * CELL_SIZE;
-
-            if (level_grid[i][j] == 1) { // This is a block tile
-                std::cout << "Drawing tile (block) at [" << i << ", " << j << "]" << std::endl;
-                sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
-                entity e;
-                e.type = "block";
-                e.obj = rect;
-                vector_items.push_back(e);
-            }
-        }
-    }
     while (window.isOpen())
     {
+        if (!vector_items.size()) {
+            for (int i = 0; i < sizeof(level_grid) / sizeof(level_grid[0]); i++) { // Level
+                for (int j = 0; j < sizeof(level_grid[0]) / sizeof(level_grid[0][0]); j++) {
+                    int x_pos = j * CELL_SIZE;
+                    int y_pos = window.getSize().y - i * CELL_SIZE;
+
+                    if (level_grid[i][j] == 1) { // This is a block tile
+                        std::cout << "Drawing tile (block) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "block";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                }
+            }
+        }
         this->keyHandler();
         if (keystates[right]) {
             player.move("right");
@@ -170,6 +172,12 @@ void Game::keyHandler() {
         if (event.type == sf::Event::Closed) {
             window.close();
         }
+        else if (event.type == sf::Event::Resized) {
+            vector_items.clear();
+            window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Fullscreen | sf::Style::Close);
+            window.setFramerateLimit(FPS);
+            window.setVerticalSyncEnabled(true);
+        }
         else if (event.type == sf::Event::KeyPressed)
         {
             if (event.key.code == sf::Keyboard::Right)
@@ -184,6 +192,12 @@ void Game::keyHandler() {
             }
             else if (event.key.code == sf::Keyboard::Down) {
                 keystates[down] = true;
+            }
+            else if (event.key.code == sf::Keyboard::F) {
+                vector_items.clear();
+                window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE);
+                window.setFramerateLimit(FPS);
+                window.setVerticalSyncEnabled(true);
             }
         }
         else if (event.type == sf::Event::KeyReleased) {
