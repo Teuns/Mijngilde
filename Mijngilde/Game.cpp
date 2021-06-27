@@ -144,7 +144,7 @@ void Game::run() {
                 jump = false;
                 keystates[up] = false;
                 std::cout << "jumping done" << std::endl;
-                sf::IntRect temp_m_player = { m_player.left, ground_level - m_player.height, m_player.width, m_player.height };
+                sf::IntRect temp_m_player = { m_player.left, ground_level + CELL_SIZE, m_player.width, m_player.height };
                 entity _collide;
                 _collide = getCollide(m_player);
                 // Check here if player jumps on a coin
@@ -152,7 +152,7 @@ void Game::run() {
         }
         else {
             // Check if player is still colliding with a block
-            sf::IntRect temp_m_player = { m_player.left, ground_level - m_player.height, m_player.width, m_player.height };
+            sf::IntRect temp_m_player = { m_player.left, ground_level + CELL_SIZE, m_player.width, m_player.height };
             entity _collide;
             _collide = getCollide(temp_m_player);
             if (!collide(temp_m_player)) {

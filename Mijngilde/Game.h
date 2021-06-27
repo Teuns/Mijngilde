@@ -22,11 +22,11 @@ private:
     // For the enimies, please keep the enemy path in mind (300)
     // It's from the bottom to up (so the first row is the bottom ground, then it goes all way up)
     int level_grid[5][55] = {
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
-        { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
-        { 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1 },
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1 },
+        { 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1 },
+        { 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1 },
+        { 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1 },
     };
     float Framerate;
     float fps;

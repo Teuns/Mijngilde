@@ -15,8 +15,8 @@ void Player::setSprite(sf::Sprite sprite) {
 	playerSprite = sprite;
     playerSprite.setTextureRect(player);
 	playerSprite.setScale(playerWidth / playerSprite.getLocalBounds().width, playerHeight / playerSprite.getLocalBounds().height);
-	player.width = player.width * playerSprite.getScale().x;
-	player.height = player.height * playerSprite.getScale().y;
+	player.width = playerWidth;
+	player.height = playerHeight;
 }
 
 void Player::doDamage() {
