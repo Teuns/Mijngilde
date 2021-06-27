@@ -5,7 +5,7 @@
 #include "Core.h"
 
 #define FPS 60
-#define CELL_SIZE 50
+#define CELL_SIZE 100
 
 class Game : public Core
 {
@@ -35,8 +35,8 @@ private:
     sf::Sprite bgSprite;
     sf::IntRect bgRect;
     int player_vely = 0;
-    int jumpHeight = 30;
-    int scrollSpeed = 5;
+    int jumpDistance = 40;
+    int scrollSpeed = 10;
     std::string direction;
     bool jump = false, onBlock = true, scrolling = false;
 protected:

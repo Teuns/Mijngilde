@@ -4,7 +4,7 @@
 
 Player::Player(std::string name) {
 	this->name = name;
-	player = { 0, 0, 50, 50 };
+	player = { 0, 0, 115, 430 };
 }
 
 std::string Player::getName() {
@@ -14,6 +14,9 @@ std::string Player::getName() {
 void Player::setSprite(sf::Sprite sprite) {
 	playerSprite = sprite;
     playerSprite.setTextureRect(player);
+	playerSprite.setScale(playerWidth / playerSprite.getLocalBounds().width, playerHeight / playerSprite.getLocalBounds().height);
+	player.width = player.width * playerSprite.getScale().x;
+	player.height = player.height * playerSprite.getScale().y;
 }
 
 void Player::doDamage() {
@@ -23,7 +26,7 @@ void Player::doDamage() {
 void Player::move(std::string direction) {
 	if (direction == "left") player.left -= speed;
 	else if (direction == "right") player.left += speed;
-    playerSprite.setPosition(sf::Vector2f(player.left, player.top));
+    // playerSprite.setPosition(sf::Vector2f(player.left, player.top));
 }
 
 void Player::setPosition(int x, int y) {

@@ -6,10 +6,11 @@
 class Core
 {
 public:
-    Core();
+    void init();
     sf::Sprite getSprite(std::string sprite);
 private:
     std::vector<sf::Sprite> vector_sprites = {};
+    std::vector<sf::Texture> vector_textures;
 protected:
     enum Keystates
     {

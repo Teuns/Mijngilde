@@ -28,12 +28,14 @@ entity Game::getCollide(sf::IntRect player) { // Return collided object
 
 void Game::run() {
     // Initialize game
+    init();
     ground_level = window.getSize().y - CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0]); // Ground level
     Player player("Teun");
-    player.setSprite(getSprite("player")); // Set player sprite
+    player.setSprite(getSprite("player.png")); // Set player sprite
     std::cout << "player name: " << player.getName() << std::endl;
     player.setPosition(player.getPlayer().getTextureRect().left, ground_level - player.getPlayer().getTextureRect().height); // Set player positions
     bgTexture.setRepeated(true);
+    bgTexture.setSmooth(true);
     bgSprite.setTexture(bgTexture); // Draw background
     while (window.isOpen())
     {
@@ -43,11 +45,11 @@ void Game::run() {
                     int x_pos = j * CELL_SIZE;
                     int y_pos = window.getSize().y - i * CELL_SIZE;
 
-                    if (level_grid[i][j] == 1) { // This is a block tile
-                        std::cout << "Drawing tile (block) at [" << i << ", " << j << "]" << std::endl;
+                    if (level_grid[i][j] == 1) { // This is a grass tile
+                        std::cout << "Drawing tile (grass) at [" << i << ", " << j << "]" << std::endl;
                         sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
                         entity e;
-                        e.type = "block";
+                        e.type = "grass";
                         e.obj = rect;
                         vector_items.push_back(e);
                     }
@@ -82,7 +84,7 @@ void Game::run() {
             }
         }
         if (keystates[up]) {
-            if (player.getPlayerRect().top == ground_level || player.getPlayerRect().top == ground_level - player.getPlayerRect().height) player_vely = -jumpHeight;
+            if (player.getPlayerRect().top == ground_level || player.getPlayerRect().top == ground_level - player.getPlayerRect().height) player_vely = -jumpDistance;
             jump = true;
         }
         if (keystates[down]) {
@@ -96,15 +98,15 @@ void Game::run() {
             scrollingOffset = 0;
         }
         bgRect.left = scrollingOffset;
-        bgSprite.setTextureRect(sf::IntRect(bgRect.left, 0, window.getSize().x, window.getSize().y));
+        bgSprite.setTextureRect(sf::IntRect(bgRect.left, 0, window.getSize().x, bgTexture.getSize().y));
         window.draw(bgSprite);
         bgRect.left = scrollingOffset + bgTexture.getSize().x;
-        bgSprite.setTextureRect(sf::IntRect(bgRect.left, 0, window.getSize().x, window.getSize().y));
+        bgSprite.setTextureRect(sf::IntRect(bgRect.left, 0, window.getSize().x, bgTexture.getSize().y));
         window.draw(bgSprite); // Draw background
         if (scrolling) {
-            // clear tiles
+            // Clear tiles
             for (entity& rect : vector_items) {
-                // increase positions to new direction
+                // Increase positions to new direction
                 if (direction == "R") rect.obj.left -= scrollSpeed;
                 else if (direction == "L") rect.obj.left += scrollSpeed;
             }
@@ -114,6 +116,7 @@ void Game::run() {
         this->renderLevel();
         // Jumping animation
         sf::IntRect m_player = player.getPlayerRect();
+        player.setPosition(m_player.left, m_player.top);
         if (jump) {
             if (collide(m_player)) onBlock = !onBlock;
             player_vely += 1;
@@ -125,7 +128,7 @@ void Game::run() {
             // Detect if the player is colliding with a block
             if (e_collide.type != "" && _collide.top > 2) {
                 // If the player is colliding from the bottom to the top with a block, then cancel the jump
-                if (m_player.top + jumpHeight >= _collide.top + _collide.height) {
+                if (m_player.top + jumpDistance >= _collide.top + _collide.height) {
                     std::cout << "Hit from under a block!" << std::endl;
                     player_vely = 0;
                 }
@@ -141,7 +144,7 @@ void Game::run() {
                 jump = false;
                 keystates[up] = false;
                 std::cout << "jumping done" << std::endl;
-                sf::IntRect temp_m_player = { m_player.left, ground_level + m_player.height, m_player.width, m_player.height };
+                sf::IntRect temp_m_player = { m_player.left, ground_level - m_player.height, m_player.width, m_player.height };
                 entity _collide;
                 _collide = getCollide(m_player);
                 // Check here if player jumps on a coin
@@ -149,11 +152,11 @@ void Game::run() {
         }
         else {
             // Check if player is still colliding with a block
-            sf::IntRect temp_m_player = { m_player.left, ground_level + m_player.height, m_player.width, m_player.height };
+            sf::IntRect temp_m_player = { m_player.left, ground_level - m_player.height, m_player.width, m_player.height };
             entity _collide;
             _collide = getCollide(temp_m_player);
             if (!collide(temp_m_player)) {
-                player_vely = jumpHeight;
+                player_vely = jumpDistance;
                 jump = true;
                 onBlock = false;
             }
@@ -221,9 +224,9 @@ void Game::keyHandler() {
 void Game::renderLevel()
 {
     for (entity& rect : vector_items) {
-        sf::Sprite sprite = getSprite("");
-        sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
-        if (rect.type == "block") {
+        if (rect.type == "grass") {
+            sf::Sprite sprite = getSprite("grass.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
             window.draw(sprite);
         }
     }

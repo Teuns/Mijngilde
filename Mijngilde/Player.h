@@ -5,7 +5,7 @@
 #include <string>
 #include "Game.h"
 
-class Player : public Game
+class Player
 {
 public:
     Player(std::string name);
@@ -20,9 +20,9 @@ private:
     sf::IntRect player;
     sf::Sprite playerSprite;
     std::string name;
-    int speed = 5;
+    int speed = 10;
 protected:
-
+    int playerWidth = 75, playerHeight = 150;
 };
 
 #endif

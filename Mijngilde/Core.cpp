@@ -4,23 +4,22 @@
 #include "Game.h"
 
 std::string path = "assets";
-std::vector<std::string> sprites = { "", "player" };
+std::vector<std::string> sprites = { "player.png", "grass.png" };
 
-Core::Core() {
+void Core::init() {
 	for (std::string& sprite : sprites) {
 		std::cout << "creating " << sprite << " surface" << std::endl;
 		std::string location = path + "/sprites/" + sprite;
 		sf::Texture texture;
-		texture.create(CELL_SIZE, CELL_SIZE);
-		if (sprite != "" && !texture.loadFromFile(location.c_str()))
+		texture.setSmooth(true);
+		if (!texture.loadFromFile(location))
 		{
 			std::cout << "Unable to load " << sprite << std::endl;
 		}
 		sf::Sprite Sprite;
-		Sprite.setTexture(texture);
-		if (sprite == "") Sprite.setColor({ 32, 191, 107 });
-		else if (sprite == "player") Sprite.setColor({ 253, 150, 68 });
+		Sprite.setTextureRect({ 0, 0, CELL_SIZE, CELL_SIZE });
 		vector_sprites.push_back(Sprite);
+		vector_textures.push_back(texture);
 	}
 	if (!bgTexture.loadFromFile(path + "/sprites/layer_1.png")) {
 		std::cout << "Unable to load bgTexture" << std::endl;
@@ -33,6 +32,7 @@ sf::Sprite Core::getSprite(std::string sprite) {
 	if (it != sprites.end())
 	{
 		int index = it - sprites.begin();
+		if (vector_sprites[index].getTexture() != &vector_textures[index]) vector_sprites[index].setTexture(vector_textures[index]);
 		return vector_sprites[index];
 	}
 }
