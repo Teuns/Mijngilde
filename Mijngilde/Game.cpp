@@ -26,10 +26,15 @@ entity Game::getCollide(sf::IntRect player) { // Return collided object
     return collide;
 };
 
+inline bool operator==(const entity& a, const entity& b)
+{
+    return a.obj.left == b.obj.left && a.obj.top == b.obj.top && a.obj.width == b.obj.width && a.obj.height == b.obj.height;
+}
+
 void Game::run() {
     // Initialize game
     init();
-    ground_level = window.getSize().y - CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0]); // Ground level
+    ground_level = window.getSize().y - (CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0])); // Ground level
     Player player("Teun");
     player.setSprite(getSprite("player.png")); // Set player sprite
     std::cout << "player name: " << player.getName() << std::endl;
@@ -52,6 +57,80 @@ void Game::run() {
                         e.type = "grass";
                         e.obj = rect;
                         vector_items.push_back(e);
+                    } 
+                    else if (level_grid[i][j] == 2) { // This is a dirt tile
+                        std::cout << "Drawing tile (dirt) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "dirt";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 3) { // This is a stone tile
+                        std::cout << "Drawing tile (stone) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "stone";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 4) { // This is a coat tile
+                        std::cout << "Drawing tile (coat) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "coat";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 5) { // This is a glass tile
+                        std::cout << "Drawing tile (glass) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "glass";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 6) { // This is a gold tile
+                        std::cout << "Drawing tile (gold) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "gold";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 7) { // This is a wood tile
+                        std::cout << "Drawing tile (wood) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "wood";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 8) { // This is a sand tile
+                        std::cout << "Drawing tile (sand) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "sand";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 9) { // This is a tnt tile
+                        std::cout << "Drawing tile (tnt) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        entity e;
+                        e.type = "tnt";
+                        e.obj = rect;
+                        vector_items.push_back(e);
+                    }
+                    else if (level_grid[i][j] == 10) { // This is a cow tile
+                        std::cout << "Drawing tile (cow) at [" << i << ", " << j << "]" << std::endl;
+                        sf::IntRect rect = { x_pos, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                        enemy e;
+                        e.type = "cow";
+                        e.path = -1;
+                        e.startX = rect.left;
+                        e.obj = rect;
+                        vector_enemies.push_back(e);
                     }
                 }
             }
@@ -60,9 +139,8 @@ void Game::run() {
         if (keystates[right]) {
             player.move("right");
             if (collide(player.getPlayerRect())) {
-                player.move("left"); // If colliding, move back
+                player.move("left", true); // If colliding, move back
             }
-            
             if (player.getPlayerRect().left > (window.getSize().x - player.getPlayerRect().width * 2) - 200) {
                 direction = "R";
                 scrollingOffset -= scrollSpeed;
@@ -73,9 +151,8 @@ void Game::run() {
         if (keystates[left]) {
             player.move("left");
             if (collide(player.getPlayerRect())) {
-                player.move("right"); // If colliding, move back
+                player.move("right", true); // If colliding, move back
             }
-            
             if (player.getPlayerRect().left < player.getPlayerRect().width + 200) {
                 direction = "L";
                 scrollingOffset += scrollSpeed;
@@ -110,13 +187,66 @@ void Game::run() {
                 if (direction == "R") rect.obj.left -= scrollSpeed;
                 else if (direction == "L") rect.obj.left += scrollSpeed;
             }
+            for (enemy& rect : vector_enemies) {
+                // Increase positions to new direction
+                if (direction == "R") {
+                    rect.obj.left -= scrollSpeed;
+                    rect.startX -= scrollSpeed;
+                }
+                else if (direction == "L") {
+                    rect.obj.left += scrollSpeed;
+                    rect.startX += scrollSpeed;
+                }
+            }
             scrolling = false;
         }
         window.draw(player.getPlayer()); // Draw player
         this->renderLevel();
-        // Jumping animation
         sf::IntRect m_player = player.getPlayerRect();
-        player.setPosition(m_player.left, m_player.top);
+        // Animate enemies
+        for (enemy& enemy : vector_enemies) {
+            // Scrolling doesn't work very well
+            enemy.obj.left = enemy.count + enemy.startX;
+            if (enemy.type == "cow") {
+                sf::Sprite sprite = getSprite("cow.png");
+                sprite.setPosition(sf::Vector2f(enemy.obj.left, enemy.obj.top));
+                if (enemy.flip) {
+                    sprite.setScale(-1, 1);
+                    enemy.obj.width = -(int)sprite.getTexture()->getSize().x;
+                }
+                else {
+                    sprite.setScale(1, 1);
+                    enemy.obj.width = sprite.getTexture()->getSize().x;
+                }
+                window.draw(sprite);
+            }
+            enemy.collide = collide(enemy.obj);
+            enemy._collide = getCollide(enemy.obj);
+            enemy.count += enemySpeed;
+            if (enemy.obj.intersects(player.getPlayerRect())) {
+                enemy.count -= enemySpeed;
+                player.doDamage();
+                if (enemy.anim == false) m_player.left += enemy.obj.width;
+                else m_player.left -= enemy.obj.width;
+                enemy.anim = !enemy.anim;
+                enemy.flip = false;
+                continue;
+            }
+            if (enemy.path > 0 && enemy.count > enemy.startX + enemy.path || enemy.path == -1 && enemy.count > enemy._collide.obj.width && enemy.collide) {
+                enemy.count -= enemySpeed;
+                enemy.anim = true;
+            }
+            if (enemy.anim) {
+                enemy.flip = true;
+                enemy.count -= enemySpeed * 2;
+                if (enemy.path > 0 && enemy.count < enemy.startX || enemy.path == -1 && enemy.count < enemy._collide.obj.width && enemy.collide) {
+                    enemy.count += enemySpeed;
+                    enemy.anim = false;
+                    enemy.flip = false;
+                }
+            }
+        }
+        // Jumping animation
         if (jump) {
             if (collide(m_player)) onBlock = !onBlock;
             player_vely += 1;
@@ -151,11 +281,12 @@ void Game::run() {
             }
         }
         else {
+            player.setPosition(m_player.left, m_player.top);
             // Check if player is still colliding with a block
             sf::IntRect temp_m_player = { m_player.left, ground_level + CELL_SIZE, m_player.width, m_player.height };
             entity _collide;
             _collide = getCollide(temp_m_player);
-            if (!collide(temp_m_player)) {
+            if (!collide(temp_m_player) && m_player.top != window.getSize().y - m_player.height) {
                 player_vely = jumpDistance;
                 jump = true;
                 onBlock = false;
@@ -218,6 +349,39 @@ void Game::keyHandler() {
                 keystates[down] = false;
             }
         }
+        else if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+            sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+            int xIndex = (int)std::floor(worldPos.y / CELL_SIZE);
+            int yIndex = (int)std::floor((worldPos.x - scrollingOffset) / CELL_SIZE);
+            int x_pos = yIndex * CELL_SIZE;
+            int y_pos = xIndex * CELL_SIZE;
+            if (event.mouseButton.button == sf::Mouse::Right) {
+                std::cout << "Drawing tile at [" << xIndex << ", " << yIndex << "]" << std::endl;
+                sf::IntRect rect = { x_pos + scrollingOffset, y_pos, CELL_SIZE, CELL_SIZE };
+                entity e;
+                e.type = blocks[activeBlock];
+                e.obj = rect;
+                vector_items.push_back(e);
+            }
+            else if (event.mouseButton.button == sf::Mouse::Left) {
+                std::cout << "Removing tile at [" << xIndex << ", " << yIndex << "]" << std::endl;
+                sf::IntRect rect = { x_pos + scrollingOffset, y_pos, CELL_SIZE, CELL_SIZE };
+                entity e;
+                e.obj = rect;
+                vector_items.erase(
+                    std::remove_if(vector_items.begin(), vector_items.end(), [e](entity v) { return v == e; }),
+                    vector_items.end());
+            }
+        }
+        else if (event.type == sf::Event::MouseWheelScrolled) {
+            if (event.mouseWheelScroll.delta < 0) {
+                if (blocks.size() <= activeBlock + 1 == false) activeBlock++;
+            }
+            else if (event.mouseWheelScroll.delta > 0) {
+                if (blocks.size() <= activeBlock - 1 == false) activeBlock--;
+            }
+        }
     }
 }
 
@@ -226,6 +390,46 @@ void Game::renderLevel()
     for (entity& rect : vector_items) {
         if (rect.type == "grass") {
             sf::Sprite sprite = getSprite("grass.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "dirt") {
+            sf::Sprite sprite = getSprite("dirt.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "stone") {
+            sf::Sprite sprite = getSprite("stone.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "coat") {
+            sf::Sprite sprite = getSprite("coat.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "glass") {
+            sf::Sprite sprite = getSprite("glass.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "gold") {
+            sf::Sprite sprite = getSprite("gold.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "wood") {
+            sf::Sprite sprite = getSprite("wood.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "sand") {
+            sf::Sprite sprite = getSprite("sand.png");
+            sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
+            window.draw(sprite);
+        }
+        else if (rect.type == "tnt") {
+            sf::Sprite sprite = getSprite("tnt.png");
             sprite.setPosition(sf::Vector2f(rect.obj.left, rect.obj.top));
             window.draw(sprite);
         }

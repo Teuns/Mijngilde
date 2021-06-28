@@ -22,6 +22,7 @@ protected:
     };
     int keystates[max_keys]{};
     std::vector<entity> vector_items = {};
+    std::vector<enemy> vector_enemies = {};
     sf::Texture bgTexture;
 };
 

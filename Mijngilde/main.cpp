@@ -7,7 +7,7 @@
 int main(int argc, char* args[])
 {
     Main main;
-    std::cout << "Initializing main" << std::endl;
+    std::cout << "Initializing window" << std::endl;
     main.init();
 
     return 0;
@@ -15,11 +15,11 @@ int main(int argc, char* args[])
 
 int Main::init()
 {
-    window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Fullscreen | sf::Style::Close);
+    window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE);
     window.setFramerateLimit(FPS);
     window.setVerticalSyncEnabled(true);
 
-    std::cout << "Initialized main, running game" << std::endl;
+    std::cout << "Initialized window, running game" << std::endl;
 
     run();
 

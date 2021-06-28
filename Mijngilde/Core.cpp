@@ -4,7 +4,7 @@
 #include "Game.h"
 
 std::string path = "assets";
-std::vector<std::string> sprites = { "player.png", "grass.png" };
+std::vector<std::string> sprites = { "player.png", "grass.png", "dirt.png", "stone.png", "coat.png", "glass.png", "gold.png", "wood.png", "sand.png", "tnt.png", "cow.png" };
 
 void Core::init() {
 	for (std::string& sprite : sprites) {

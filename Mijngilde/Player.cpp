@@ -23,9 +23,19 @@ void Player::doDamage() {
 	// Do damage
 }
 
-void Player::move(std::string direction) {
+void Player::move(std::string direction, bool collide) {
 	if (direction == "left") player.left -= speed;
 	else if (direction == "right") player.left += speed;
+	if (!collide) {
+		if (direction == "left") {
+			playerSprite.setScale((-playerWidth) / playerSprite.getLocalBounds().width, playerHeight / playerSprite.getLocalBounds().height);
+			player.width = -playerWidth;
+		}
+		else if (direction == "right") {
+			playerSprite.setScale(playerWidth / playerSprite.getLocalBounds().width, playerHeight / playerSprite.getLocalBounds().height);
+			player.width = playerWidth;
+		}
+	}
     // playerSprite.setPosition(sf::Vector2f(player.left, player.top));
 }
 
