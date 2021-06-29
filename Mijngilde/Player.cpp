@@ -1,6 +1,5 @@
 #include <iostream>
 #include "Player.h"
-#include "Game.h"
 
 Player::Player(std::string name) {
 	this->name = name;

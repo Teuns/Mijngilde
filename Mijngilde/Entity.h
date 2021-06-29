@@ -6,6 +6,7 @@
 typedef struct entity_s {
     sf::IntRect obj;
     std::string type;
+    sf::Sprite sprite;
 } entity;
 
 typedef struct enemy_s {
@@ -18,6 +19,7 @@ typedef struct enemy_s {
     bool anim = false;
     bool collide = false;
     entity _collide = {};
+    sf::Sprite sprite;
 } enemy;
 
 

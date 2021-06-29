@@ -24,6 +24,7 @@ protected:
     std::vector<entity> vector_items = {};
     std::vector<enemy> vector_enemies = {};
     sf::Texture bgTexture;
+    std::vector<std::string> sprites = { "player.png", "grass.png", "dirt.png", "stone.png", "coat.png", "glass.png", "gold.png", "wood.png", "sand.png", "tnt.png", "cow.png", "chicken.png", "pig.png" };
 };
 
 #endif
