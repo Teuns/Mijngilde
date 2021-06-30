@@ -3,7 +3,7 @@
 
 Player::Player(std::string name) {
 	this->name = name;
-	player = { 0, 0, 115, 430 };
+	player = { 0, 0, 115, 430 }; // Sprite texture sizes
 }
 
 std::string Player::getName() {
@@ -23,6 +23,7 @@ void Player::doDamage() {
 }
 
 void Player::move(std::string direction, bool collide) {
+	Player::direction = direction;
 	if (direction == "left") player.left -= speed;
 	else if (direction == "right") player.left += speed;
 	if (!collide) {
@@ -35,7 +36,6 @@ void Player::move(std::string direction, bool collide) {
 			player.width = playerWidth;
 		}
 	}
-    // playerSprite.setPosition(sf::Vector2f(player.left, player.top));
 }
 
 void Player::setPosition(int x, int y) {
@@ -49,4 +49,8 @@ sf::Sprite Player::getPlayer() {
 
 sf::IntRect Player::getPlayerRect() {
 	return player;
+}
+
+std::string Player::getPlayerDirection() {
+	return Player::direction;
 }

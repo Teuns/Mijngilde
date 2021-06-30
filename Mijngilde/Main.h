@@ -5,8 +5,8 @@
 #include "Game.h"
 
 #define WINDOW_TITLE "Mijngilde"
-#define SCREEN_WIDTH 2000
-#define SCREEN_HEIGHT 1200
+#define SCREEN_WIDTH 3000
+#define SCREEN_HEIGHT 1500
 
 class Main : public Game
 {

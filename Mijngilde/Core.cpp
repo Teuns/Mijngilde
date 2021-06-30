@@ -27,7 +27,6 @@ void Core::init() {
 
 sf::Sprite Core::getSprite(std::string sprite) {
 	auto it = std::find(sprites.begin(), sprites.end(), sprite);
-
 	if (it != sprites.end())
 	{
 		int index = it - sprites.begin();
