@@ -68,6 +68,7 @@ void Game::run() {
                         e.obj = rect;
                         e.sprite = sprite;
                         vector_items.push_back(e);
+                        std::cout << "rect.y: " << rect.top << std::endl;
                     } 
                     else if (level_grid[i][j] == 2) { // This is a dirt tile
                         std::cout << "Drawing tile (dirt) at [" << i << ", " << j << "]" << std::endl;
@@ -290,11 +291,11 @@ void Game::run() {
         if (cursor) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
-            int xIndex = (int)std::floor(worldPos.y / CELL_SIZE);
-            int yIndex = (int)std::floor((worldPos.x - scrollingOffset) / CELL_SIZE);
-            int x_pos = yIndex * CELL_SIZE;
-            int y_pos = xIndex * CELL_SIZE;
-            sf::IntRect rect = { x_pos + scrollingOffset, y_pos, CELL_SIZE, CELL_SIZE };
+            int xIndex = std::floor((worldPos.x - scrollingOffset) / CELL_SIZE);
+            int yIndex = std::floor(window.getSize().y / CELL_SIZE - (worldPos.y / CELL_SIZE));
+            int x_pos = xIndex * CELL_SIZE;
+            int y_pos = window.getSize().y - yIndex * CELL_SIZE;
+            sf::IntRect rect = { x_pos + scrollingOffset, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
             sf::Sprite cursor = getSprite("cursor.png");
             cursor.setTextureRect({ 0, 0, (int)cursor.getTexture()->getSize().x, (int)cursor.getTexture()->getSize().y });
             cursor.setScale(CELL_SIZE / cursor.getLocalBounds().width, CELL_SIZE / cursor.getLocalBounds().height);
@@ -414,13 +415,12 @@ void Game::keyHandler(Player player) {
             window.close();
         }
         else if (event.type == sf::Event::Resized) { // Full screen
-            vector_items.clear();
-            vector_enemies.clear();
-            window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Fullscreen | sf::Style::Close);
+            window.create(sf::VideoMode(), WINDOW_TITLE, sf::Style::Fullscreen);
             window.setFramerateLimit(FPS);
             window.setVerticalSyncEnabled(true);
-            sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-            window.setView(sf::View(visibleArea));
+            std::cout << "window.getSize().y: " << window.getSize().y << std::endl;
+            vector_items.clear();
+            vector_enemies.clear();
             ground_level = window.getSize().y - (CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0])) - CELL_SIZE; // Ground level
         }
         else if (event.type == sf::Event::KeyPressed)
@@ -466,20 +466,19 @@ void Game::keyHandler(Player player) {
         else if (event.type == sf::Event::MouseMoved) {
             cursor = true;
         }
-        // Add and remove blocks based on mouse position and button press
-        // TO DO: Make this work in full screen
+        // Add or remove blocks based on mouse position and button press
         else if (event.type == sf::Event::MouseButtonPressed) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
-            int xIndex = (int)std::floor(worldPos.y / CELL_SIZE);
-            int yIndex = (int)std::floor((worldPos.x - scrollingOffset) / CELL_SIZE);
-            int x_pos = yIndex * CELL_SIZE;
-            int y_pos = xIndex * CELL_SIZE;
+            int xIndex = std::floor((worldPos.x - scrollingOffset) / CELL_SIZE);
+            int yIndex = std::floor(window.getSize().y / CELL_SIZE - (worldPos.y / CELL_SIZE));
+            int x_pos = xIndex * CELL_SIZE;
+            int y_pos = window.getSize().y - yIndex * CELL_SIZE;
             if ((player.getPlayerRect().left < player.getPlayerRect().width
                 || player.getPlayerRect().left >(window.getSize().x - player.getPlayerRect().width * 2)) == false) {
                 if (event.mouseButton.button == sf::Mouse::Right) {
                     std::cout << "Drawing tile at [" << xIndex << ", " << yIndex << "]" << std::endl;
-                    sf::IntRect rect = { x_pos + scrollingOffset, y_pos, CELL_SIZE, CELL_SIZE };
+                    sf::IntRect rect = { x_pos + scrollingOffset, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
                     sf::Sprite sprite = getSprite(sprites[activeBlock + 1]);
                     sprite.setPosition(sf::Vector2f(rect.left, rect.top));
                     entity e;
@@ -490,7 +489,7 @@ void Game::keyHandler(Player player) {
                 }
                 else if (event.mouseButton.button == sf::Mouse::Left) {
                     std::cout << "Removing tile at [" << xIndex << ", " << yIndex << "]" << std::endl;
-                    sf::IntRect rect = { x_pos + scrollingOffset, y_pos, CELL_SIZE, CELL_SIZE };
+                    sf::IntRect rect = { x_pos + scrollingOffset, y_pos - CELL_SIZE, CELL_SIZE, CELL_SIZE };
                     entity e;
                     e.obj = rect;
                     vector_items.erase(
@@ -502,9 +501,11 @@ void Game::keyHandler(Player player) {
         else if (event.type == sf::Event::MouseWheelScrolled) {
             if (event.mouseWheelScroll.delta < 0) {
                 if (blocks.size() <= activeBlock + 1 == false) activeBlock++;
+                else activeBlock--;
             }
             else if (event.mouseWheelScroll.delta > 0) {
                 if (blocks.size() <= activeBlock - 1 == false) activeBlock--;
+                else activeBlock++;
             }
         }
     }
