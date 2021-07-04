@@ -42,11 +42,15 @@ entity Game::getCollide(sf::IntRect player) { // Return collided object
 void Game::run() {
     // Initialize game
     init();
-    ground_level = window.getSize().y - (CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0])) - CELL_SIZE; // Ground level
+    int xIndex = 1;
+    int yIndex = 6;
+    int x_pos = xIndex * CELL_SIZE;
+    int y_pos = window.getSize().y - yIndex * CELL_SIZE;
     Player player("Teun");
     player.setSprite(getSprite("player.png")); // Set player sprite
     std::cout << "player name: " << player.getName() << std::endl;
-    player.setPosition(player.getPlayer().getTextureRect().left + CELL_SIZE, ground_level - player.getPlayer().getTextureRect().height); // Set player positions
+    ground_level = y_pos - player.getPlayer().getTextureRect().height;
+    player.setPosition(x_pos, ground_level); // Set player positions
     bgTexture.setRepeated(true);
     bgTexture.setSmooth(true);
     bgSprite.setTexture(bgTexture); // Draw background
@@ -222,7 +226,6 @@ void Game::run() {
                 }
             }
         }
-        this->keyHandler(player);
         entity _collide = getCollide(player.getPlayerRect());
         if (keystates[right]) {
             player.move("right", false);
@@ -386,6 +389,15 @@ void Game::run() {
             }
         }
         else {
+            if (resize) {
+                int xIndex = std::floor((m_player.left - scrollingOffset) / CELL_SIZE);
+                int yIndex = std::floor(window.getSize().y / CELL_SIZE - (m_player.top / CELL_SIZE)) + 3;  
+                int x_pos = xIndex * CELL_SIZE;
+                int y_pos = window.getSize().y - yIndex * CELL_SIZE;
+                ground_level = y_pos - player.getPlayer().getTextureRect().height;
+                m_player.top = ground_level;
+                resize = false;
+            }
             player.setPosition(m_player.left, m_player.top);
             // Check if player is still colliding with a block
             sf::IntRect temp_m_player = { m_player.left, ground_level + 25, m_player.width, m_player.height };
@@ -401,6 +413,7 @@ void Game::run() {
                 else if (player.getPlayerDirection() == "left") player.move("left", false);
             }
         }
+        this->keyHandler(player);
         window.display(); // Display everything
         // Fps counter
         this->fpsTicker();
@@ -418,10 +431,13 @@ void Game::keyHandler(Player player) {
             window.create(sf::VideoMode(), WINDOW_TITLE, sf::Style::Fullscreen);
             window.setFramerateLimit(FPS);
             window.setVerticalSyncEnabled(true);
-            std::cout << "window.getSize().y: " << window.getSize().y << std::endl;
-            vector_items.clear();
-            vector_enemies.clear();
-            ground_level = window.getSize().y - (CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0])) - CELL_SIZE; // Ground level
+            for (entity& rect : vector_items) {
+                rect.obj.top += window.getSize().y - SCREEN_HEIGHT;
+            }
+            for (enemy& rect : vector_enemies) {
+                rect.obj.top += window.getSize().y - SCREEN_HEIGHT;
+            }
+            resize = true;
         }
         else if (event.type == sf::Event::KeyPressed)
         {
@@ -439,13 +455,16 @@ void Game::keyHandler(Player player) {
                 keystates[down] = true;
             }
             else if (event.key.code == sf::Keyboard::F) { // Go out of full screen
-                vector_items.clear();
-                vector_enemies.clear();
+                for (entity& rect : vector_items) {
+                    rect.obj.top -= window.getSize().y - SCREEN_HEIGHT;
+                }
+                for (enemy& rect : vector_enemies) {
+                    rect.obj.top -= window.getSize().y - SCREEN_HEIGHT;
+                }
                 window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), WINDOW_TITLE);
                 window.setFramerateLimit(FPS);
                 window.setVerticalSyncEnabled(true);
-                ground_level = window.getSize().y - (CELL_SIZE * sizeof(level_grid) / sizeof(level_grid[0])) - CELL_SIZE; // Ground level
-                player.setPosition(player.getPlayer().getTextureRect().left + CELL_SIZE, ground_level - player.getPlayer().getTextureRect().height); // Set player positions
+                resize = true;
             }
         }
         else if (event.type == sf::Event::KeyReleased) {

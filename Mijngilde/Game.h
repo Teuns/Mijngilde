@@ -71,7 +71,7 @@ private:
     bool collidedWithEnemy = false;
     int activeBlock = 1;
     std::vector<std::string> blocks = { "grass", "dirt", "stone", "coat", "glass", "gold", "wood1", "wood2", "sand", "tnt", "leaves" };
-    bool cursor = false;
+    bool resize, cursor = false;
 protected:
     sf::RenderWindow window;
     int ground_level = 0;
